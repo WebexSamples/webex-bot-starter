@@ -9,13 +9,15 @@ Starter kit template for a simple Cisco Spark bot
 
 - [ ] Sign up for nGrok (save API key) and start it on your machine (save the port number and public web address)
 
-- [ ] Join a room in Cisco sparkbotstarter
+- [ ] Join a room in Cisco Spark
 
-- [ ] Obtain the roomId from the Cisco Spark API
+- [ ] Add the bot to the room in Spark
 
-- [ ] Create a webhook with the roomId and using your nGrok address
+- [ ] Obtain the roomId from an authenticated GET using the Cisco Spark API
 
-- [ ] Add the
+- [ ] Create a webhook with the roomId and using your nGrok address by POSTing to Cisco Spark API
+
+- [ ] Add the port/nGrok address to your bot server config
 
 - [ ] Turn on your bot server with ```npm start```
 

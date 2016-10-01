@@ -4,7 +4,7 @@
   "description": "Starter kit for creating a Cisco Spark bot",
   "main": "index.js",
   "scripts": {
-    "start": "npm install && node index.js"
+    "start": "npm install && node --use_strict index.js"
   },
   "repository": {
     "type": "git",

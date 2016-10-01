@@ -1,9 +1,15 @@
 # sparkbotstarter
 Starter kit template for a simple Cisco Spark bot
 
-# Checklist (absolute bare minimum to get a helloworld bot working)
+## Checklist (absolute bare minimum to get a helloworld bot working)
 
-- [ ] Sign up for Cisco Spark
+Prerequisites:
+
+- [ ] node.js (minimum supported v4.2.6 with *use-strict* runtime flag & npm 2.14.12 and up)
+
+- [ ] Sign up for Cisco Spark (logged in with your web browser)
+
+----
 
 - [ ] Create a Cisco Spark Bot (save the API key)
 
@@ -19,4 +25,4 @@ Starter kit template for a simple Cisco Spark bot
 
 - [ ] Turn on your bot server with ```npm start```
 
-//Todo: Add accompanying blog post, easy explanation, Postman instructions, links to other resources and tutorial, Licecap Gifs, example of what the bot will do
+//Todo: Add accompanying blog post (easy explanation), Postman instructions, links to other resources and tutorial, Licecap Gifs, gif demonstration of what a working bot will do

@@ -19,5 +19,10 @@
   "bugs": {
     "url": "https://github.com/valgaze/sparkbotstarter/issues"
   },
-  "homepage": "https://github.com/valgaze/sparkbotstarter#readme"
+  "homepage": "https://github.com/valgaze/sparkbotstarter#readme",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "node-flint": "^4.2.1"
+  }
 }

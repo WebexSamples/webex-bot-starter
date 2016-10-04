@@ -1,5 +1,5 @@
 /*
-Heavily based off Nick Marcus' node-flint framework helloworld example: https://github.com/nmarus/flint
+Heavily based off Nick Marus' node-flint framework helloworld example: https://github.com/nmarus/flint
 */
 
 var Flint = require('node-flint');

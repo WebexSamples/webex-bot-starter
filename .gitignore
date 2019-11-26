@@ -38,3 +38,6 @@ jspm_packages
 
 #config
 config.json
+
+#DS Store
+.DS_Store

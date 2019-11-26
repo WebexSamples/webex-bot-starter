@@ -1,6 +1,4 @@
-/*
-Webex Bot Starter - featuring the webex-node-bot-framework - https://www.npmjs.com/package/webex-node-bot-framework
-*/
+//Webex Bot Starter - featuring the webex-node-bot-framework - https://www.npmjs.com/package/webex-node-bot-framework
 
 var framework = require('webex-node-bot-framework');
 var webhook = require('webex-node-bot-framework/webhook');
@@ -33,9 +31,8 @@ framework.on('spawn', function (bot) {
   }
 });
 
-/****
-## Process incoming messages
-****/
+
+//Process incoming messages
 
 
 /* On mention with command
@@ -55,7 +52,7 @@ framework.hears('framework', function (bot) {
 });
 
 /* On mention with command, using other trigger data, can use lite markdown formatting
-ex "@botname info"
+ex User enters @botname 'info' phrase, the bot will provide personal details
 */
 framework.hears('info', function (bot, trigger) {
   console.log("info command received");
@@ -68,7 +65,7 @@ framework.hears('info', function (bot, trigger) {
 });
 
 /* On mention with bot data 
-ex User enters @botname space phrase, the bot will provide details about that particular space
+ex User enters @botname 'space' phrase, the bot will provide details about that particular space
 */
 framework.hears('space', function (bot, trigger) {
   console.log("space. the final frontier");
@@ -127,7 +124,7 @@ let cardJSON =
 }
 
 /* On mention with card example
-ex User enters @botname card me phrase, the bot will produce a personalized card - https://developer.webex.com/docs/api/guides/cards
+ex User enters @botname 'card me' phrase, the bot will produce a personalized card - https://developer.webex.com/docs/api/guides/cards
 */
 framework.hears('card me', function (bot, trigger) {
   
@@ -142,9 +139,8 @@ framework.hears('card me', function (bot, trigger) {
 
 });
 
-/****
-## Server config & housekeeping
-****/
+
+//Server config & housekeeping
 
 app.post('/', webhook(framework));
 

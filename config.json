@@ -1,5 +1,0 @@
-{
-  "webhookUrl": "http://PUTWEBADDRESSHERE",
-  "token": "__PUT_BOT_API_KEY_HERE",
-  "port": 1337
-}

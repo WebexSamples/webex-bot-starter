@@ -11,7 +11,6 @@ Here is the bot in action:
 ![What we're making](./images/webexbotstarter.gif)
 
 
-
 ## Prerequisites:
 
 - [ ] node.js (minimum supported v8.0.0 & npm 2.14.12 and up)

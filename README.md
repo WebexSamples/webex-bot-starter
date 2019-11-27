@@ -4,8 +4,11 @@
 
 *For a more detailed walkthorugh, see the (forthcoming) companion blog post here: https://example.com/nothing_here_yet*
 
-![What we're making](./images/webexbotstarter_small.gif)
+This is a very simple Webex Teams node.JS bot application that serves as a template to be further extended. It features the [webex-node-bot-framework](https://github.com/jpjpjp/webex-node-bot-framework) that simplifies development for Webex Teams bots by abstractig away some of the complexity of the API calls and registering for events.  Some parts of the app are taken from on the old [sparkbotstarter](https://github.com/valgaze/sparkbotstarter) template created by Victor Algaze. 
 
+Here is the bot in action:
+
+![What we're making](./images/webexbotstarter.gif)
 
 
 

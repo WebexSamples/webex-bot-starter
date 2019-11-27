@@ -8,7 +8,6 @@ This is a very simple Webex Teams node.JS bot application that serves as a templ
 
 Here is the bot in action:
 
-
 ![What we're making](./images/webexbotstarter.gif)
 
 

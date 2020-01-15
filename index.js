@@ -6,28 +6,37 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var app = express();
 app.use(bodyParser.json());
+app.use(express.static('images'));
 const config = require("./config.json");
 
 // init framework
 var framework = new framework(config);
 framework.start();
-console.log("Striking framework, please wait...");
+console.log("Starting framework, please wait...");
 
 framework.on("initialized", function () {
   console.log("framework is all fired up! [Press CTRL-C to quit]");
 });
 
 // A spawn event is generated when the framework finds a space with your bot in it
-framework.on('spawn', function (bot) {
-  if (!framework.initialized) {
+// If actorId is set, it means that user has just added your bot to a new space
+// If not, the framework has discovered your bot in an existing space
+framework.on('spawn', function (bot, id, actorId) {
+  if (!actorId) {
     // don't say anything here or your bot's spaces will get 
     // spammed every time your server is restarted
-    console.log (`While starting up framework found our bot in a space called: ${bot.room.title}`);
+    console.log(`While starting up framework found our bot in a space called: ${bot.room.title}`);
   } else {
     // After initialization, a spawn event means your bot got added to 
     // a new space.   Say hello, and tell users what you do!
-    let botName = bot.person.displayName;
-    bot.say("markdown", 'Hello there. You can say `help` to get the list of words I am able to respond to. \n\n\n Don\'t forget, in order for me to see your messages in a groups space, be sure to *@mention* `',botName,'`.');
+    var msg = 'Hello there. You can say `help` to get the list of words I am able to respond to.';
+    if (bot.isDirect) {
+      bot.say('markdown', msg);
+    } else {
+      let botName = bot.person.displayName;
+      msg += `\n\nDon't forget, in order for me to see your messages in this group space, be sure to *@mention* ${botName}.`;
+      bot.say('markdown', msg);
+    }
   }
 });
 
@@ -48,7 +57,7 @@ ex User enters @botname framework, the bot will write back in markdown
 */
 framework.hears('framework', function (bot) {
   console.log("framework command received");
-  bot.say("markdown", "The primary purpose for the [webex-node-bot-framework](https://github.com/jpjpjp/webex-node-bot-framework) was to create a framework based on the [webex-jssdk](https://webex.github.io/webex-js-sdk) which continues to be supported as new features and functionality are added to Webex. This version of the proejct was designed with two themes in mind: \n\n\n * Mimimize Webex API Calls. The original flint could be quite slow as it attempted to provide bot developers rich details about the space, membership, message and message author. This version eliminates some of that data in the interests of efficiency, (but provides convenience methods to enable bot developers to get this information if it is required)\n * Leverage native Webex data types. The original flint would copy details from the webex objects such as message and person into various flint objects. This version simply attaches the native Webex objects. This increases the framework's efficiency and makes it future proof as new attributes are added to the various webex DTOs " );
+  bot.say("markdown", "The primary purpose for the [webex-node-bot-framework](https://github.com/jpjpjp/webex-node-bot-framework) was to create a framework based on the [webex-jssdk](https://webex.github.io/webex-js-sdk) which continues to be supported as new features and functionality are added to Webex. This version of the proejct was designed with two themes in mind: \n\n\n * Mimimize Webex API Calls. The original flint could be quite slow as it attempted to provide bot developers rich details about the space, membership, message and message author. This version eliminates some of that data in the interests of efficiency, (but provides convenience methods to enable bot developers to get this information if it is required)\n * Leverage native Webex data types. The original flint would copy details from the webex objects such as message and person into various flint objects. This version simply attaches the native Webex objects. This increases the framework's efficiency and makes it future proof as new attributes are added to the various webex DTOs ");
 });
 
 /* On mention with command, using other trigger data, can use lite markdown formatting
@@ -69,20 +78,20 @@ ex User enters @botname 'space' phrase, the bot will provide details about that 
 */
 framework.hears('space', function (bot, trigger) {
   console.log("space. the final frontier");
-  let roomTitle =  bot.room.title;
+  let roomTitle = bot.room.title;
   let spaceID = bot.room.id;
   let roomType = bot.room.type;
 
   let outputString = `The title of this space: ${roomTitle} \n\n The roomID of this space: ${spaceID} \n\n The type of this space: ${roomType}`;
-  
+
   console.log(outputString);
   bot.say("markdown", outputString)
-  .catch((e) => console.error(`bot.say failed: ${e.message}`));
+    .catch((e) => console.error(`bot.say failed: ${e.message}`));
 
 });
 
 // Buttons & Cards data
-let cardJSON = 
+let cardJSON =
 {
   $schema: "http://adaptivecards.io/schemas/adaptive-card.json",
   type: 'AdaptiveCard',
@@ -99,21 +108,21 @@ let cardJSON =
               type: 'Image',
               url: 'Your avatar appears here!',
               size: 'large',
-              horizontalAlignment : "Center",
+              horizontalAlignment: "Center",
               style: 'person'
             },
             {
               type: 'TextBlock',
               text: 'Your name will be here!',
               size: 'medium',
-              horizontalAlignment : "Center",
+              horizontalAlignment: "Center",
               weight: 'Bolder'
             },
             {
               type: 'TextBlock',
               text: 'And your email goes here!',
               size: 'small',
-              horizontalAlignment : "Center",
+              horizontalAlignment: "Center",
               isSubtle: true,
               wrap: false
             }]
@@ -127,20 +136,24 @@ let cardJSON =
 ex User enters @botname 'card me' phrase, the bot will produce a personalized card - https://developer.webex.com/docs/api/guides/cards
 */
 framework.hears('card me', function (bot, trigger) {
-  
-  console.log("someone found the easter egg");
-    console.log(trigger.person.avatar);
-    let avatar = trigger.person.avatar;
 
-      cardJSON.body[0].columns[0].items[0].url = avatar;
-      cardJSON.body[0].columns[0].items[1].text = trigger.person.displayName;
-      cardJSON.body[0].columns[0].items[2].text = trigger.person.emails[0];
+  console.log("someone found the easter egg");
+  console.log(trigger.person.avatar);
+  let avatar = trigger.person.avatar;
+
+  cardJSON.body[0].columns[0].items[0].url = (avatar) ? avatar : `${config.webhookUrl}/missing-avatar.jpg`;
+  cardJSON.body[0].columns[0].items[1].text = trigger.person.displayName;
+  cardJSON.body[0].columns[0].items[2].text = trigger.person.emails[0];
   bot.sendCard(cardJSON, 'This is customizable fallback text for clients that do not support buttons & cards');
 
 });
 
 
 //Server config & housekeeping
+// Health Check
+app.get('/', function (req, res) {
+  res.send(`I'm alive.`);
+});
 
 app.post('/', webhook(framework));
 

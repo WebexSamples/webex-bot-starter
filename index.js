@@ -90,6 +90,30 @@ framework.hears('space', function (bot, trigger) {
 
 });
 
+/* 
+   Say hi to every member in the space
+   This demonstrates how developers can access the webex
+   sdk to call any Webex API.  API Doc: https://webex.github.io/webex-js-sdk/api/
+*/
+framework.hears("say hi to everyone", function (bot, trigger) {
+  // Use the webex SDK to get the list of users in this space
+  bot.webex.memberships.list({roomId: bot.room.id})
+    .then((memberships) => {
+      for (const member of memberships.items) {
+        if (member.personId === bot.person.id) {
+          // Skip myself!
+          continue;
+        }
+        let displayName = (member.personDisplayName) ? member.personDisplayName : member.personEmail;
+        bot.say(`Hello ${displayName}`);
+      }
+    })
+    .catch((e) => {
+      console.error(`Call to sdk.memberships.get() failed: ${e.messages}`);
+      bot.say('Hello everybody!');
+    });
+});
+
 // Buttons & Cards data
 let cardJSON =
 {

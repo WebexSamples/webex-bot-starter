@@ -43,13 +43,16 @@ framework.on('spawn', function (bot, id, actorId) {
 
 //Process incoming messages
 
-
+let responded = false;
 /* On mention with command
 ex User enters @botname help, the bot will write back in markdown
 */
-framework.hears('help', function (bot, trigger) {
-  console.log("someone needs help!");
-  bot.say("markdown", 'Hello, ', trigger.person.displayName, '- these are the commands I can respond to:', '\n\n 1. **framework**   (learn more about the Webex Bot Framework) \n 2. **info**  (get your personal details) \n 3. **space**  (get details about this space) \n 4. **card me** (a cool card!) \n 5. **help** (what you are reading now)');
+framework.hears(/help|what can i (do|say)|what (can|do) you do/i, function (bot, trigger) {
+  console.log(`someone needs help! They asked ${trigger.text}`);
+  responded = true;
+  bot.say(`Hello ${trigger.person.displayName}.`)
+    .then(() => sendHelp(bot))
+    .catch((e) => console.error(`Problem in help hander: ${e.message}`));
 });
 
 /* On mention with command
@@ -57,6 +60,7 @@ ex User enters @botname framework, the bot will write back in markdown
 */
 framework.hears('framework', function (bot) {
   console.log("framework command received");
+  responded = true;
   bot.say("markdown", "The primary purpose for the [webex-node-bot-framework](https://github.com/jpjpjp/webex-node-bot-framework) was to create a framework based on the [webex-jssdk](https://webex.github.io/webex-js-sdk) which continues to be supported as new features and functionality are added to Webex. This version of the proejct was designed with two themes in mind: \n\n\n * Mimimize Webex API Calls. The original flint could be quite slow as it attempted to provide bot developers rich details about the space, membership, message and message author. This version eliminates some of that data in the interests of efficiency, (but provides convenience methods to enable bot developers to get this information if it is required)\n * Leverage native Webex data types. The original flint would copy details from the webex objects such as message and person into various flint objects. This version simply attaches the native Webex objects. This increases the framework's efficiency and makes it future proof as new attributes are added to the various webex DTOs ");
 });
 
@@ -65,6 +69,7 @@ ex User enters @botname 'info' phrase, the bot will provide personal details
 */
 framework.hears('info', function (bot, trigger) {
   console.log("info command received");
+  responded = true;
   //the "trigger" parameter gives you access to data about the user who entered the command
   let personAvatar = trigger.person.avatar;
   let personEmail = trigger.person.emails[0];
@@ -76,8 +81,9 @@ framework.hears('info', function (bot, trigger) {
 /* On mention with bot data 
 ex User enters @botname 'space' phrase, the bot will provide details about that particular space
 */
-framework.hears('space', function (bot, trigger) {
+framework.hears('space', function (bot) {
   console.log("space. the final frontier");
+  responded = true;
   let roomTitle = bot.room.title;
   let spaceID = bot.room.id;
   let roomType = bot.room.type;
@@ -95,7 +101,9 @@ framework.hears('space', function (bot, trigger) {
    This demonstrates how developers can access the webex
    sdk to call any Webex API.  API Doc: https://webex.github.io/webex-js-sdk/api/
 */
-framework.hears("say hi to everyone", function (bot, trigger) {
+framework.hears("say hi to everyone", function (bot) {
+  console.log("say hi to everyone.  Its a party");
+  responded = true;
   // Use the webex SDK to get the list of users in this space
   bot.webex.memberships.list({roomId: bot.room.id})
     .then((memberships) => {
@@ -150,17 +158,14 @@ let cardJSON =
               isSubtle: true,
               wrap: false
             }]
-        }
-        ]
-    }
-    ]
-}
+        }]
+    }]
+};
 
 /* On mention with card example
 ex User enters @botname 'card me' phrase, the bot will produce a personalized card - https://developer.webex.com/docs/api/guides/cards
 */
 framework.hears('card me', function (bot, trigger) {
-
   console.log("someone found the easter egg");
   console.log(trigger.person.avatar);
   let avatar = trigger.person.avatar;
@@ -169,8 +174,31 @@ framework.hears('card me', function (bot, trigger) {
   cardJSON.body[0].columns[0].items[1].text = trigger.person.displayName;
   cardJSON.body[0].columns[0].items[2].text = trigger.person.emails[0];
   bot.sendCard(cardJSON, 'This is customizable fallback text for clients that do not support buttons & cards');
-
 });
+
+/* On mention with unexpected bot command
+   Its a good practice is to gracefully handle unexpected input
+*/
+framework.hears(/.*/, function (bot, trigger) {
+  // This will fire for any input so only respond if we haven't already
+  if (!responded) {
+    console.log(`catch-all handler fired for user input: ${trigger.text}`);
+    bot.say(`Sorry, I don't know how to respond to "${trigger.text}"`)
+      .then(() => sendHelp(bot))
+      .catch((e) => console.error(`Problem in the unexepected command hander: ${e.message}`));
+  }
+  responded = false;
+});
+
+function sendHelp(bot) {
+  bot.say("markdown", 'These are the commands I can respond to:', '\n\n ' +
+    '1. **framework**   (learn more about the Webex Bot Framework) \n' +
+    '2. **info**  (get your personal details) \n' +
+    '3. **space**  (get details about this space) \n' +
+    '4. **card me** (a cool card!) \n' +
+    '5. **say hi to everyone** (everyone gets a greeting using a call to the Webex SDK) \n' +
+    '6. **help** (what you are reading now)');
+}
 
 
 //Server config & housekeeping

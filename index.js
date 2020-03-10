@@ -167,7 +167,7 @@ ex User enters @botname 'card me' phrase, the bot will produce a personalized ca
 */
 framework.hears('card me', function (bot, trigger) {
   console.log("someone found the easter egg");
-  console.log(trigger.person.avatar);
+  responded = true;
   let avatar = trigger.person.avatar;
 
   cardJSON.body[0].columns[0].items[0].url = (avatar) ? avatar : `${config.webhookUrl}/missing-avatar.jpg`;

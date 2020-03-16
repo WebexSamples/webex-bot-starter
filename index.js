@@ -21,22 +21,30 @@ framework.on("initialized", function () {
 // A spawn event is generated when the framework finds a space with your bot in it
 // If actorId is set, it means that user has just added your bot to a new space
 // If not, the framework has discovered your bot in an existing space
-framework.on('spawn', function (bot, id, actorId) {
+framework.on('spawn', (bot, id, actorId) => {
   if (!actorId) {
-    // don't say anything here or your bot's spaces will get 
+    // don't say anything here or your bot's spaces will get
     // spammed every time your server is restarted
-    console.log(`While starting up framework found our bot in a space called: ${bot.room.title}`);
+    console.log(`While starting up, the framework found our bot in a space called: ${bot.room.title}`);
   } else {
-    // After initialization, a spawn event means your bot got added to 
-    // a new space.   Say hello, and tell users what you do!
-    var msg = 'Hello there. You can say `help` to get the list of words I am able to respond to.';
-    if (bot.isDirect) {
-      bot.say('markdown', msg);
-    } else {
-      let botName = bot.person.displayName;
-      msg += `\n\nDon't forget, in order for me to see your messages in this group space, be sure to *@mention* ${botName}.`;
-      bot.say('markdown', msg);
-    }
+    // When actorId is present it means someone added your bot got added to a new space
+    // Lets find out more about them..
+    var msg = 'You can say `help` to get the list of words I am able to respond to.';
+    bot.webex.people.get(actorId).then((user) => {
+      msg = `Hello there ${user.displayName}. ${msg}`; 
+    }).catch((e) => {
+      console.error(`Failed to lookup user details in framwork.on("spawn"): ${e.message}`);
+      msg = `Hello there. ${msg}`;  
+    }).finally(() => {
+      // Say hello, and tell users what you do!
+      if (bot.isDirect) {
+        bot.say('markdown', msg);
+      } else {
+        let botName = bot.person.displayName;
+        msg += `\n\nDon't forget, in order for me to see your messages in this group space, be sure to *@mention* ${botName}.`;
+        bot.say('markdown', msg);
+      }
+    });
   }
 });
 

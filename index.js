@@ -221,7 +221,7 @@ function sendHelp(bot) {
     '3. **space**  (get details about this space) \n' +
     '4. **card me** (a cool card!) \n' +
     '5. **say hi to everyone** (everyone gets a greeting using a call to the Webex SDK) \n' +
-    '6. **reply** (have bot reply to your message)' +
+    '6. **reply** (have bot reply to your message) \n' +
     '7. **help** (what you are reading now)');
 }
 

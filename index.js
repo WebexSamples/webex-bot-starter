@@ -174,7 +174,7 @@ let cardJSON =
 ex User enters @botname 'card me' phrase, the bot will produce a personalized card - https://developer.webex.com/docs/api/guides/cards
 */
 framework.hears('card me', function (bot, trigger) {
-  console.log("someone found the easter egg");
+  console.log("someone asked for a card");
   responded = true;
   let avatar = trigger.person.avatar;
 
@@ -182,6 +182,22 @@ framework.hears('card me', function (bot, trigger) {
   cardJSON.body[0].columns[0].items[1].text = trigger.person.displayName;
   cardJSON.body[0].columns[0].items[2].text = trigger.person.emails[0];
   bot.sendCard(cardJSON, 'This is customizable fallback text for clients that do not support buttons & cards');
+});
+
+/* On mention reply example
+ex User enters @botname 'reply' phrase, the bot will post a threaded reply
+*/
+framework.hears('reply', function (bot, trigger) {
+  console.log("someone asked for a reply.  We will give them two.");
+  responded = true;
+  bot.reply(trigger.message, 
+    'This is threaded reply sent using the `bot.reply()` method.',
+    'markdown');
+  var msg_attach = {
+    text: "This is also threaded reply with an attachment sent via bot.reply(): ",
+    file: 'https://media2.giphy.com/media/dTJd5ygpxkzWo/giphy-downsized-medium.gif'
+  };
+  bot.reply(trigger.message, msg_attach);
 });
 
 /* On mention with unexpected bot command
@@ -205,7 +221,8 @@ function sendHelp(bot) {
     '3. **space**  (get details about this space) \n' +
     '4. **card me** (a cool card!) \n' +
     '5. **say hi to everyone** (everyone gets a greeting using a call to the Webex SDK) \n' +
-    '6. **help** (what you are reading now)');
+    '6. **reply** (have bot reply to your message) \n' +
+    '7. **help** (what you are reading now)');
 }
 
 

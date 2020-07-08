@@ -1,5 +1,11 @@
 # Webex-Bot-Starter
 
+-----
+
+**Note:** To skip the details and get up and running ASAP, see here: **[quickstart.md](./quickstart.md)**
+
+------
+
 ### Starter kit and template for a simple Webex Teams bot
 
 *For a more detailed walkthorugh, see the companion blog post here: https://developer.webex.com/blog/from-zero-to-webex-teams-chatbot-in-15-minutes*
@@ -27,12 +33,20 @@ git
 
 2. Sign up for nGrok, then connect and start it on your machine (save the port number and public web address): https://ngrok.com/download
  
-3. Add the nGrok address, port number and bot access token to the `config-template.json` file
+3. Add the nGrok address, port number and bot access token to the **[config.json](config.json)** file
 
-4. Re-name the  `config-template.json`  file as  `config.json`
+4. 
 
 5. Turn on your bot server with ```npm start```
 
 6. Create a space in Webex Teams
 
 7. Add the bot (by its username) to the space in Webex Teams
+
+
+nGrok
+>start from config file
+>bind tls
+>region
+      "region":"us",
+    "bind_tls":true

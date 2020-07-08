@@ -37,7 +37,8 @@ jspm_packages
 .node_repl_history
 
 #config
-config.json
+#config.json
+# Removing config-template.json for simplicity
 
 #DS Store
 .DS_Store

@@ -4,7 +4,14 @@
   "description": "Starter template for creating a Webex Teams bot",
   "main": "index.js",
   "scripts": {
-    "start": "npm install && node --use_strict index.js"
+    "reset": "cp util/config.json config.json",
+    "setup": "npm install && echo -e '\nSetup complete. Follow the steps here:\n\nhttps://github.com/WebexSamples/webex-bot-starter/blob/master/quickstart.md \n\n'",
+    "start": "npm install && node --use_strict index.js",
+    "start:noinstall": "node index.js",
+    "server": "npm run start:noinstall",
+    "dev": "nodemon index.js",
+    "server:dev": "npm run dev",
+    "tunnel": "cd util && node ngrok_min.js"
   },
   "repository": {
     "type": "git",
@@ -25,5 +32,12 @@
     "body-parser": "^1.15.2",
     "express": "^4.14.0",
     "webex-node-bot-framework": "^1.0.5"
+  },
+  "devDependencies": {
+    "blessed": "^0.1.81",
+    "blessed-contrib": "^4.8.20",
+    "ngrok": "^3.2.7",
+    "nodemon": "^2.0.4",
+    "prettier": "^2.0.5"
   }
 }

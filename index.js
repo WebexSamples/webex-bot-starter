@@ -7,7 +7,7 @@ var bodyParser = require('body-parser');
 var app = express();
 app.use(bodyParser.json());
 app.use(express.static('images'));
-const config = require("./config.json");
+const config = require('./config.json');
 
 // init framework
 var framework = new framework(config);
@@ -15,7 +15,7 @@ framework.start();
 console.log("Starting framework, please wait...");
 
 framework.on("initialized", function () {
-  console.log("framework is all fired up! [Press CTRL-C to quit]");
+  console.log(`framework is all fired up on port ${config.port}! [Press CTRL-C to quit]`);
 });
 
 // A spawn event is generated when the framework finds a space with your bot in it
@@ -215,7 +215,7 @@ framework.hears(/.*/, function (bot, trigger) {
 });
 
 function sendHelp(bot) {
-  bot.say("markdown", 'These are the commands I can respond to:', '\n\n ' +
+  bot.say("markdown", 'These are some of the commands I can respond to:', '\n\n ' +
     '1. **framework**   (learn more about the Webex Bot Framework) \n' +
     '2. **info**  (get your personal details) \n' +
     '3. **space**  (get details about this space) \n' +
@@ -229,13 +229,19 @@ function sendHelp(bot) {
 //Server config & housekeeping
 // Health Check
 app.get('/', function (req, res) {
-  res.send(`I'm alive.`);
+  res.send(`Backend is up and running ${String(new Date())}`);
 });
 
-app.post('/', webhook(framework));
+app.post(config.webhookRoute, webhook(framework));
+/**
+ * ex
+ * app.post('/mywebhookroute', webhook(framework))
+ * 
+ **/ 
 
 var server = app.listen(config.port, function () {
-  framework.debug('framework listening on port %s', config.port);
+  framework.debug(`framework listening on port ${config.port}`);
+  framework.debug(`Webhook URL set to ${config.webhookUrl}`)
 });
 
 // gracefully shutdown (ctrl-c)

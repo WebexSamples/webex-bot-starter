@@ -27,7 +27,7 @@ git
 
 2. Sign up for nGrok, then connect and start it on your machine (save the port number and public web address): https://ngrok.com/download
 
-3. After installing ngrok run it on your local machine to get a public ip address, eg `ngrok http 3000 --region=eu`
+3. After installing ngrok, run it on your local machine to get a public ip address, eg `ngrok http 3000 --region=eu`
  
 4. Copy the ip address displayed in the ngrok window, ie: : https://1234.eu.ngrok.io
 

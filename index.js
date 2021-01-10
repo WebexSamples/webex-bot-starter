@@ -267,14 +267,85 @@ framework.hears('card me', function (bot, trigger) {
   bot.sendCard(cardJSON, 'This is customizable fallback text for clients that do not support buttons & cards');
 });
 
+/*
+Rock Paper Scissors code
+code to dm specific people:
+bot.dmCard(email,rpsJSON, 'this is the RPS card').then((value)=>{
+     console.log(value);
+ });
+*/
+let user1 = null;
+let user2 = null;
+let user1_choice = null;
+let user2_choice = null;
+
 framework.hears('RPS', function( bot, trigger){
   console.log("Rock Paper Scissors was called");
   bot.say("Rock Paper Scissors was called");
+  // bot.say(`message= ${JSON.stringify(trigger.message, null, 2)}`);
   responded = true;
 
-  let response = bot.sendCard(rpsJSON, 'this is the RPS card');
-  console.log(response)
+  let email = framework.getPersonEmail(trigger.person);
+  user1 = trigger.message.personId;
+  user2 = trigger.message.mentionedPeople[1];
+
+  bot.say(`user1 = ${user1} and user2 = ${user2}`);
   
+  bot.sendCard(rpsJSON, 'this is the RPS card');
+});
+
+function process_choice(choice){
+  user2_choice = 's'; //TESTING PURPOSE
+  if('rock' in choice){
+    return 'r';
+  }
+  else if('paper' in choice){
+    return 'p';
+  }
+  else if('scissors' in choice){
+    return 's';
+  }
+}
+
+function process_win(bot){
+  if(user1_choice == user2_choice){
+    bot.say('The match ended in a draw!');
+  }
+  else if((user1_choice == 'r' && user2_choice == 's') ||
+          (user1_choice == 'p' && user2_choice == 'r') ||
+          (user1_choice == 's' && user2_choice == 'p')){
+    bot.say("User 1 Wins!")
+  }
+  else{
+    bot.say("User 2 Wins!")
+  }
+}
+
+function reset_rps(){
+  user1_choice = null;
+  user2_choice = null;
+  user1 = null;
+  user2 = null;
+}
+
+// Process a submitted card
+framework.on('attachmentAction', function (bot, trigger) {
+  // bot.say(`Got an attachmentAction:\n${JSON.stringify(trigger.attachmentAction, null, 2)}`);
+  let json = trigger.attachmentAction;
+  // console.log('rock' in json.inputs);
+  if(json.personId == user1 ){
+    user1_choice = process_choice(json.inputs);
+    bot.say(`User 1 chose ${user1_choice}`)
+  }
+  else if(json.personId == user2 ){
+    user2_choice = process_choice(json.inputs);
+  }
+
+  if(user1_choice != null && user2_choice != null){
+    //compute who won
+    process_win(bot);
+    reset_rps();
+  }
 });
 
 /* On mention reply example

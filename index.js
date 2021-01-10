@@ -170,6 +170,89 @@ let cardJSON =
     }]
 };
 
+let rpsJSON =
+{
+  $schema : "http://adaptivecards.io/schemas/adaptive-card.json",
+  version: "1.0",
+  type : "AdaptiveCard",
+  body: [
+      {
+          type: "ColumnSet",
+          columns: [
+              {
+                  type: "Column",
+                  items: [
+                      {
+                          type: "Image",
+                          style: "Person",
+                          url: "https://developer.webex.com/images/webex-teams-logo.png",
+                          size: "Medium",
+                          height: "50px"
+                      }
+                  ],
+                  width: "auto"
+              },
+              {
+                  type: "Column",
+                  items: [
+                      {
+                          type: "TextBlock",
+                          text: "UW Game Bot",
+                          weight: "Lighter",
+                          color: "Accent"
+                      },
+                      {
+                          type: "TextBlock",
+                          weight: "Bolder",
+                          text: "Rock Paper Scissors",
+                          wrap: true,
+                          color: "Light",
+                          size: "Large",
+                          spacing: "Small"
+                      }
+                  ],
+                  width: "stretch"
+              }
+          ]
+      },
+      {
+          type: "TextBlock",
+          text: "Make your choice!",
+          wrap: true,
+          horizontalAlignment: "Center"
+      },
+      {
+          type: "ActionSet",
+          actions: [
+              {
+                  type: "Action.Submit",
+                  title: "Rock",
+                  data: {
+                      "rock": true
+                  }
+              },
+              {
+                  type: "Action.Submit",
+                  title: "Paper",
+                  data: {
+                      "paper": true
+                  }
+              },
+              {
+                  type: "Action.Submit",
+                  title: "Scissors",
+                  data: {
+                      "scissors": true
+                  },
+                  style: "positive"
+              }
+          ],
+          spacing: "None",
+          horizontalAlignment: "Center"
+      }
+  ],
+};
+
 /* On mention with card example
 ex User enters @botname 'card me' phrase, the bot will produce a personalized card - https://developer.webex.com/docs/api/guides/cards
 */
@@ -184,6 +267,16 @@ framework.hears('card me', function (bot, trigger) {
   bot.sendCard(cardJSON, 'This is customizable fallback text for clients that do not support buttons & cards');
 });
 
+framework.hears('RPS', function( bot, trigger){
+  console.log("Rock Paper Scissors was called");
+  bot.say("Rock Paper Scissors was called");
+  responded = true;
+
+  let response = bot.sendCard(rpsJSON, 'this is the RPS card');
+  console.log(response)
+  
+});
+
 /* On mention reply example
 ex User enters @botname 'reply' phrase, the bot will post a threaded reply
 */
@@ -194,8 +287,8 @@ framework.hears('reply', function (bot, trigger) {
     'This is threaded reply sent using the `bot.reply()` method.',
     'markdown');
   var msg_attach = {
-    text: "This is also threaded reply with an attachment sent via bot.reply(): ",
-    file: 'https://media2.giphy.com/media/dTJd5ygpxkzWo/giphy-downsized-medium.gif'
+    text: "hmpf",
+    file: 'https://media.giphy.com/media/IcpapB2BMfiihmKBQM/giphy.gif'
   };
   bot.reply(trigger.message, msg_attach);
 });

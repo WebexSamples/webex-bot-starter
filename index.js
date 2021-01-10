@@ -226,21 +226,22 @@ let rpsJSON =
           actions: [
               {
                   type: "Action.Submit",
-                  title: "Rock",
+                  title: "Jan",
                   data: {
                       "rock": true
-                  }
+                  },
+                  style: "destructive"
               },
               {
                   type: "Action.Submit",
-                  title: "Paper",
+                  title: "Ken",
                   data: {
                       "paper": true
                   }
               },
               {
                   type: "Action.Submit",
-                  title: "Scissors",
+                  title: "Pon",
                   data: {
                       "scissors": true
                   },
@@ -274,10 +275,14 @@ bot.dmCard(email,rpsJSON, 'this is the RPS card').then((value)=>{
      console.log(value);
  });
 */
-let user1 = null;
-let user2 = null;
+let user1_id = null;
+let user2_id = null;
+let username1 = null;
+let username2 = null;
 let user1_choice = null;
 let user2_choice = null;
+
+let webex = framework.getWebexSDK();
 
 framework.hears('RPS', function( bot, trigger){
   console.log("Rock Paper Scissors was called");
@@ -286,16 +291,22 @@ framework.hears('RPS', function( bot, trigger){
   responded = true;
 
   let email = framework.getPersonEmail(trigger.person);
-  user1 = trigger.message.personId;
-  user2 = trigger.message.mentionedPeople[1];
+  user1_id = trigger.message.personId;
+  user2_id = trigger.message.mentionedPeople[1];
+  console.log(typeof webex);
+  webex.people.get(user1_id).then(person =>{
+    username1 = person.displayName;
+  })
+  webex.people.get(user2_id).then(person =>{
+    username2 = person.displayName;
+  })
 
-  bot.say(`user1 = ${user1} and user2 = ${user2}`);
+  
   
   bot.sendCard(rpsJSON, 'this is the RPS card');
 });
 
 function process_choice(choice){
-  user2_choice = 's'; //TESTING PURPOSE
   if('rock' in choice){
     return 'r';
   }
@@ -314,30 +325,31 @@ function process_win(bot){
   else if((user1_choice == 'r' && user2_choice == 's') ||
           (user1_choice == 'p' && user2_choice == 'r') ||
           (user1_choice == 's' && user2_choice == 'p')){
-    bot.say("User 1 Wins!")
+    bot.say(`${username1} Wins!`)
   }
   else{
-    bot.say("User 2 Wins!")
+    bot.say(`${username2} Wins!`)
   }
 }
 
 function reset_rps(){
   user1_choice = null;
   user2_choice = null;
-  user1 = null;
-  user2 = null;
+  user1_id = null;
+  user2_id = null;
+  username1 = null;
+  username2 = null;
 }
 
 // Process a submitted card
 framework.on('attachmentAction', function (bot, trigger) {
   // bot.say(`Got an attachmentAction:\n${JSON.stringify(trigger.attachmentAction, null, 2)}`);
   let json = trigger.attachmentAction;
-  // console.log('rock' in json.inputs);
-  if(json.personId == user1 ){
+  if(json.personId == user1_id ){
     user1_choice = process_choice(json.inputs);
-    bot.say(`User 1 chose ${user1_choice}`)
+    // bot.say(`User 1 chose ${user1_choice}`)
   }
-  else if(json.personId == user2 ){
+  else if(json.personId == user2_id ){
     user2_choice = process_choice(json.inputs);
   }
 

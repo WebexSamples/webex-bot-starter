@@ -48,6 +48,14 @@ framework.on('spawn', (bot, id, actorId) => {
   }
 });
 
+// Implementing a framework.on('log') handler allows you to capture
+// events emitted from the framework.  Its a handy way to better understand
+// what the framework is doing when first getting started, and a great 
+// way to troubleshoot issues.
+// You may wish to disable this for production apps
+framework.on('log', (msg) => {
+  console.log(msg);
+});
 
 //Process incoming messages
 

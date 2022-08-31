@@ -240,7 +240,7 @@ var server = app.listen(config.port, function () {
 
 // gracefully shutdown (ctrl-c)
 process.on('SIGINT', function () {
-  framework.debug('stoppping...');
+  framework.debug('stopping...');
   server.close();
   framework.stop().then(function () {
     process.exit();

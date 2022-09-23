@@ -14,7 +14,7 @@ var framework = new framework(config);
 framework.start();
 console.log("Starting framework, please wait...");
 
-framework.on("initialized", function () {
+framework.on("initialized", () => {
   console.log("framework is all fired up! [Press CTRL-C to quit]");
 });
 
@@ -68,7 +68,7 @@ framework.on('log', (msg) => {
 /* On mention with command
 ex User enters @botname framework, the bot will write back in markdown
 */
-framework.hears('framework', function (bot) {
+framework.hears('framework', (bot) => {
   console.log("framework command received");
   bot.say("markdown", "The primary purpose for the [webex-node-bot-framework](https://github.com/jpjpjp/webex-node-bot-framework) was to create a framework based on the [webex-jssdk](https://webex.github.io/webex-js-sdk) which continues to be supported as new features and functionality are added to Webex. This version of the project was designed with two themes in mind: \n\n\n * Mimimize Webex API Calls. The original flint could be quite slow as it attempted to provide bot developers rich details about the space, membership, message and message author. This version eliminates some of that data in the interests of efficiency, (but provides convenience methods to enable bot developers to get this information if it is required)\n * Leverage native Webex data types. The original flint would copy details from the webex objects such as message and person into various flint objects. This version simply attaches the native Webex objects. This increases the framework's efficiency and makes it future proof as new attributes are added to the various webex DTOs ");
 },'**framework**: (learn more about the Webex Bot Framework)', 0
@@ -77,7 +77,7 @@ framework.hears('framework', function (bot) {
 /* On mention with command, using other trigger data, can use lite markdown formatting
 ex User enters @botname 'info' phrase, the bot will provide personal details
 */
-framework.hears('info', function (bot, trigger) {
+framework.hears('info', (bot, trigger) => {
   console.log("info command received");
   //the "trigger" parameter gives you access to data about the user who entered the command
   let personAvatar = trigger.person.avatar;
@@ -90,7 +90,7 @@ framework.hears('info', function (bot, trigger) {
 /* On mention with bot data 
 ex User enters @botname 'space' phrase, the bot will provide details about that particular space
 */
-framework.hears('space', function (bot) {
+framework.hears('space', (bot) => {
   console.log("space. the final frontier");
   let roomTitle = bot.room.title;
   let spaceID = bot.room.id;
@@ -108,7 +108,7 @@ framework.hears('space', function (bot) {
    This demonstrates how developers can access the webex
    sdk to call any Webex API.  API Doc: https://webex.github.io/webex-js-sdk/api/
 */
-framework.hears("say hi to everyone", function (bot) {
+framework.hears("say hi to everyone", (bot) => {
   console.log("say hi to everyone.  Its a party");
   // Use the webex SDK to get the list of users in this space
   bot.webex.memberships.list({roomId: bot.room.id})
@@ -171,7 +171,7 @@ let cardJSON =
 /* On mention with card example
 ex User enters @botname 'card me' phrase, the bot will produce a personalized card - https://developer.webex.com/docs/api/guides/cards
 */
-framework.hears('card me', function (bot, trigger) {
+framework.hears('card me', (bot, trigger) => {
   console.log("someone asked for a card");
   let avatar = trigger.person.avatar;
 
@@ -184,7 +184,7 @@ framework.hears('card me', function (bot, trigger) {
 /* On mention reply example
 ex User enters @botname 'reply' phrase, the bot will post a threaded reply
 */
-framework.hears('reply', function (bot, trigger) {
+framework.hears('reply', (bot, trigger) => {
   console.log("someone asked for a reply.  We will give them two.");
   bot.reply(trigger.message, 
     'This is threaded reply sent using the `bot.reply()` method.',
@@ -202,7 +202,7 @@ ex User enters @botname help, the bot will write back in markdown
  * The framework.showHelp method will use the help phrases supplied with the previous
  * framework.hears() commands
 */
-framework.hears(/help|what can i (do|say)|what (can|do) you do/i, function (bot, trigger) {
+framework.hears(/help|what can i (do|say)|what (can|do) you do/i, (bot, trigger) => {
   console.log(`someone needs help! They asked ${trigger.text}`);
   bot.say(`Hello ${trigger.person.displayName}.`)
 //    .then(() => sendHelp(bot))
@@ -215,7 +215,7 @@ framework.hears(/help|what can i (do|say)|what (can|do) you do/i, function (bot,
    Setting the priority to a higher number here ensures that other 
    handlers with lower priority will be called instead if there is another match
 */
-framework.hears(/.*/, function (bot, trigger) {
+framework.hears(/.*/, (bot, trigger) => {
   // This will fire for any input so only respond if we haven't already
   console.log(`catch-all handler fired for user input: ${trigger.text}`);
   bot.say(`Sorry, I don't know how to respond to "${trigger.text}"`)
@@ -227,21 +227,21 @@ framework.hears(/.*/, function (bot, trigger) {
 
 //Server config & housekeeping
 // Health Check
-app.get('/', function (req, res) {
+app.get('/', (req, res) => {
   res.send(`I'm alive.`);
 });
 
 app.post('/', webhook(framework));
 
-var server = app.listen(config.port, function () {
+var server = app.listen(config.port, () => {
   framework.debug('framework listening on port %s', config.port);
 });
 
 // gracefully shutdown (ctrl-c)
-process.on('SIGINT', function () {
+process.on('SIGINT', () => {
   framework.debug('stopping...');
   server.close();
-  framework.stop().then(function () {
+  framework.stop().then(() => {
     process.exit();
   });
 });

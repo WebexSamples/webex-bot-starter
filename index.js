@@ -57,49 +57,41 @@ framework.on('log', (msg) => {
   console.log(msg);
 });
 
-//Process incoming messages
-
-let responded = false;
-/* On mention with command
-ex User enters @botname help, the bot will write back in markdown
-*/
-framework.hears(/help|what can i (do|say)|what (can|do) you do/i, function (bot, trigger) {
-  console.log(`someone needs help! They asked ${trigger.text}`);
-  responded = true;
-  bot.say(`Hello ${trigger.person.displayName}.`)
-    .then(() => sendHelp(bot))
-    .catch((e) => console.error(`Problem in help hander: ${e.message}`));
-});
+// Process incoming messages
+// Each hears() call includes the phrase to match, and the function to call if webex mesages
+// to the bot match that phrase.   
+// An optional 3rd parameter can be a help string used by the frameworks.showHelp message.
+// An optional fourth (or 3rd param if no help message is supplied) is an integer that 
+// specifies priority.   If multiple handlers match they will all be called unless the priority
+// was specified, in which case, only the handler(s) with the lowest priority will be called
 
 /* On mention with command
 ex User enters @botname framework, the bot will write back in markdown
 */
 framework.hears('framework', function (bot) {
   console.log("framework command received");
-  responded = true;
   bot.say("markdown", "The primary purpose for the [webex-node-bot-framework](https://github.com/jpjpjp/webex-node-bot-framework) was to create a framework based on the [webex-jssdk](https://webex.github.io/webex-js-sdk) which continues to be supported as new features and functionality are added to Webex. This version of the project was designed with two themes in mind: \n\n\n * Mimimize Webex API Calls. The original flint could be quite slow as it attempted to provide bot developers rich details about the space, membership, message and message author. This version eliminates some of that data in the interests of efficiency, (but provides convenience methods to enable bot developers to get this information if it is required)\n * Leverage native Webex data types. The original flint would copy details from the webex objects such as message and person into various flint objects. This version simply attaches the native Webex objects. This increases the framework's efficiency and makes it future proof as new attributes are added to the various webex DTOs ");
-});
+},'**framework**: (learn more about the Webex Bot Framework)', 0
+);
 
 /* On mention with command, using other trigger data, can use lite markdown formatting
 ex User enters @botname 'info' phrase, the bot will provide personal details
 */
 framework.hears('info', function (bot, trigger) {
   console.log("info command received");
-  responded = true;
   //the "trigger" parameter gives you access to data about the user who entered the command
   let personAvatar = trigger.person.avatar;
   let personEmail = trigger.person.emails[0];
   let personDisplayName = trigger.person.displayName;
   let outputString = `Here is your personal information: \n\n\n **Name:** ${personDisplayName}  \n\n\n **Email:** ${personEmail} \n\n\n **Avatar URL:** ${personAvatar}`;
   bot.say("markdown", outputString);
-});
+}, '**info**: (get your personal details)', 0);
 
 /* On mention with bot data 
 ex User enters @botname 'space' phrase, the bot will provide details about that particular space
 */
 framework.hears('space', function (bot) {
   console.log("space. the final frontier");
-  responded = true;
   let roomTitle = bot.room.title;
   let spaceID = bot.room.id;
   let roomType = bot.room.type;
@@ -109,8 +101,7 @@ framework.hears('space', function (bot) {
   console.log(outputString);
   bot.say("markdown", outputString)
     .catch((e) => console.error(`bot.say failed: ${e.message}`));
-
-});
+},'**space**: (get details about this space) ', 0);
 
 /* 
    Say hi to every member in the space
@@ -119,7 +110,6 @@ framework.hears('space', function (bot) {
 */
 framework.hears("say hi to everyone", function (bot) {
   console.log("say hi to everyone.  Its a party");
-  responded = true;
   // Use the webex SDK to get the list of users in this space
   bot.webex.memberships.list({roomId: bot.room.id})
     .then((memberships) => {
@@ -136,7 +126,7 @@ framework.hears("say hi to everyone", function (bot) {
       console.error(`Call to sdk.memberships.get() failed: ${e.messages}`);
       bot.say('Hello everybody!');
     });
-});
+}, '**say hi to everyone**: (everyone gets a greeting using a call to the Webex SDK)', 0);
 
 // Buttons & Cards data
 let cardJSON =
@@ -183,21 +173,19 @@ ex User enters @botname 'card me' phrase, the bot will produce a personalized ca
 */
 framework.hears('card me', function (bot, trigger) {
   console.log("someone asked for a card");
-  responded = true;
   let avatar = trigger.person.avatar;
 
   cardJSON.body[0].columns[0].items[0].url = (avatar) ? avatar : `${config.webhookUrl}/missing-avatar.jpg`;
   cardJSON.body[0].columns[0].items[1].text = trigger.person.displayName;
   cardJSON.body[0].columns[0].items[2].text = trigger.person.emails[0];
   bot.sendCard(cardJSON, 'This is customizable fallback text for clients that do not support buttons & cards');
-});
+}, '**card me**: (a cool card!)', 0);
 
 /* On mention reply example
 ex User enters @botname 'reply' phrase, the bot will post a threaded reply
 */
 framework.hears('reply', function (bot, trigger) {
   console.log("someone asked for a reply.  We will give them two.");
-  responded = true;
   bot.reply(trigger.message, 
     'This is threaded reply sent using the `bot.reply()` method.',
     'markdown');
@@ -206,32 +194,35 @@ framework.hears('reply', function (bot, trigger) {
     file: 'https://media2.giphy.com/media/dTJd5ygpxkzWo/giphy-downsized-medium.gif'
   };
   bot.reply(trigger.message, msg_attach);
-});
+}, '**reply**: (have bot reply to your message)', 0);
+
+/* On mention with command
+ex User enters @botname help, the bot will write back in markdown
+ *
+ * The framework.showHelp method will use the help phrases supplied with the previous
+ * framework.hears() commands
+*/
+framework.hears(/help|what can i (do|say)|what (can|do) you do/i, function (bot, trigger) {
+  console.log(`someone needs help! They asked ${trigger.text}`);
+  bot.say(`Hello ${trigger.person.displayName}.`)
+//    .then(() => sendHelp(bot))
+    .then(() => bot.say('markdown', framework.showHelp()))
+    .catch((e) => console.error(`Problem in help hander: ${e.message}`));
+}, '**help**: (what you are reading now)', 0);
 
 /* On mention with unexpected bot command
    Its a good practice is to gracefully handle unexpected input
+   Setting the priority to a higher number here ensures that other 
+   handlers with lower priority will be called instead if there is another match
 */
 framework.hears(/.*/, function (bot, trigger) {
   // This will fire for any input so only respond if we haven't already
-  if (!responded) {
-    console.log(`catch-all handler fired for user input: ${trigger.text}`);
-    bot.say(`Sorry, I don't know how to respond to "${trigger.text}"`)
-      .then(() => sendHelp(bot))
-      .catch((e) => console.error(`Problem in the unexepected command hander: ${e.message}`));
-  }
-  responded = false;
-});
-
-function sendHelp(bot) {
-  bot.say("markdown", 'These are the commands I can respond to:', '\n\n ' +
-    '1. **framework**   (learn more about the Webex Bot Framework) \n' +
-    '2. **info**  (get your personal details) \n' +
-    '3. **space**  (get details about this space) \n' +
-    '4. **card me** (a cool card!) \n' +
-    '5. **say hi to everyone** (everyone gets a greeting using a call to the Webex SDK) \n' +
-    '6. **reply** (have bot reply to your message) \n' +
-    '7. **help** (what you are reading now)');
-}
+  console.log(`catch-all handler fired for user input: ${trigger.text}`);
+  bot.say(`Sorry, I don't know how to respond to "${trigger.text}"`)
+    .then(() => bot.say('markdown', framework.showHelp()))
+//    .then(() => sendHelp(bot))
+    .catch((e) => console.error(`Problem in the unexepected command hander: ${e.message}`));
+}, 99999);
 
 
 //Server config & housekeeping

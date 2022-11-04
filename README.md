@@ -31,13 +31,13 @@ git
  
 4. Copy the ip address displayed in the ngrok window, ie: : https://1234.eu.ngrok.io
 
-5. Copy the `config-template.json` file to a file called `config.json`
+5. Copy the `.env.local` file to a file called `.env`
 
-4. Edit  `config.json` with the following values:
+4. Edit  `.env` with the following values:
 
-* token - Set this to the token for your bot that you got in step 1
-* port - Set this to the port you set when you started ngrok in step 3 (ie: 3000)
-* webhookUrl - Set this to the ip address that you copied in step 4
+* BOTTOKEN - Set this to the token for your bot that you got in step 1
+* PORT - Set this to the port you set when you started ngrok in step 3 (ie: 3000)
+* WEBHOOKURL - Set this to the ip address that you copied in step 4
 
 5. Turn on your bot server with ```npm start```
 

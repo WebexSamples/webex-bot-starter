@@ -1,5 +1,5 @@
 //Webex Bot Starter - featuring the webex-node-bot-framework - https://www.npmjs.com/package/webex-node-bot-framework
-
+require('dotenv').config();
 var framework = require('webex-node-bot-framework');
 var webhook = require('webex-node-bot-framework/webhook');
 var express = require('express');
@@ -7,7 +7,11 @@ var bodyParser = require('body-parser');
 var app = express();
 app.use(bodyParser.json());
 app.use(express.static('images'));
-const config = require("./config.json");
+const config = {
+  webhookUrl: process.env.WEBHOOKURL,
+  token: process.env.BOTTOKEN,
+  port: process.env.PORT
+};
 
 // init framework
 var framework = new framework(config);

@@ -8,7 +8,6 @@ This is a very simple Webex node.JS bot application that serves as a template to
 
 Here is the bot in action:
 
-git
 ![What we're making](./images/webexbotstarter.gif)
 
 ## Prerequisites:

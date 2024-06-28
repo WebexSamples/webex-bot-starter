@@ -7,11 +7,17 @@ var bodyParser = require("body-parser");
 var app = express();
 app.use(bodyParser.json());
 app.use(express.static("images"));
+
 const config = {
-  webhookUrl: process.env.WEBHOOKURL,
   token: process.env.BOTTOKEN,
-  port: process.env.PORT,
 };
+
+// Only pass the webhook URL and port if it has been set in the environment
+if (process.env.WEBHOOKURL && process.env.PORT) {
+  config.webhookUrl = process.env.WEBHOOKURL;
+  config.port = process.env.PORT;
+}
+
 
 // init framework
 var framework = new framework(config);
@@ -87,7 +93,7 @@ framework.hears(
     console.log("framework command received");
     bot.say(
       "markdown",
-      "The primary purpose for the [webex-node-bot-framework](https://github.com/jpjpjp/webex-node-bot-framework) was to create a framework based on the [webex-jssdk](https://webex.github.io/webex-js-sdk) which continues to be supported as new features and functionality are added to Webex. This version of the project was designed with two themes in mind: \n\n\n * Mimimize Webex API Calls. The original flint could be quite slow as it attempted to provide bot developers rich details about the space, membership, message and message author. This version eliminates some of that data in the interests of efficiency, (but provides convenience methods to enable bot developers to get this information if it is required)\n * Leverage native Webex data types. The original flint would copy details from the webex objects such as message and person into various flint objects. This version simply attaches the native Webex objects. This increases the framework's efficiency and makes it future proof as new attributes are added to the various webex DTOs "
+      "The primary purpose for the [webex-node-bot-framework](https://github.com/WebexCommunity/webex-node-bot-framework) was to create a framework based on the [webex-jssdk](https://webex.github.io/webex-js-sdk) which continues to be supported as new features and functionality are added to Webex. This version of the project was designed with two themes in mind: \n\n\n * Mimimize Webex API Calls. The original flint could be quite slow as it attempted to provide bot developers rich details about the space, membership, message and message author. This version eliminates some of that data in the interests of efficiency, (but provides convenience methods to enable bot developers to get this information if it is required)\n * Leverage native Webex data types. The original flint would copy details from the webex objects such as message and person into various flint objects. This version simply attaches the native Webex objects. This increases the framework's efficiency and makes it future proof as new attributes are added to the various webex DTOs "
     );
   },
   "**framework**: (learn more about the Webex Bot Framework)",
@@ -112,7 +118,7 @@ framework.hears(
   0
 );
 
-/* On mention with bot data 
+/* On mention with bot data
 ex User enters @botname 'space' phrase, the bot will provide details about that particular space
 */
 framework.hears(
@@ -134,7 +140,7 @@ framework.hears(
   0
 );
 
-/* 
+/*
    Say hi to every member in the space
    This demonstrates how developers can access the webex
    sdk to call any Webex API.  API Doc: https://webex.github.io/webex-js-sdk/api/
@@ -276,7 +282,7 @@ framework.hears(
 
 /* On mention with unexpected bot command
    Its a good practice is to gracefully handle unexpected input
-   Setting the priority to a higher number here ensures that other 
+   Setting the priority to a higher number here ensures that other
    handlers with lower priority will be called instead if there is another match
 */
 framework.hears(
